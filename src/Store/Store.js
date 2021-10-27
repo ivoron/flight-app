@@ -39,6 +39,7 @@ class Store {
     for (let i = this.startIndex; i < this.endIndex; i++) {
       this.currentFlights.push(this.allFlights[i])
     }
+    this.setShowFiltred(false)
     this.setLoading(false)
   }
   //подгрузка данных из общего массива в текущий

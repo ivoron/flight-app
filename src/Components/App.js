@@ -16,5 +16,4 @@ const App = inject('store')(
     )
   })
 )
-
 export default App
