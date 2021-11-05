@@ -1,12 +1,18 @@
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import FlightCard from './FlightCard'
 import Loader from './Loader'
 import NoResult from './NoResult'
+import { getFlightList } from '../Redux Store'
 
-const FlightList = observer(({ AppStore }) => {
+const FlightList = ({ AppStore }) => {
+  const dispatch = useDispatch()
+  const state = useSelector((state) => state)
+  console.log(state)
   const { currentFlights } = AppStore
   useEffect(() => {
+    dispatch(getFlightList)
     AppStore.getFlightList()
   }, [AppStore])
   const loadRef = React.useRef()
@@ -46,5 +52,5 @@ const FlightList = observer(({ AppStore }) => {
       )}
     </div>
   )
-})
-export default FlightList
+}
+export default observer(FlightList)
