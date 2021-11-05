@@ -4,6 +4,8 @@ import thunk from 'redux-thunk'
 // action types
 export const FETCH_FLIGHTS = 'FETCH_FLIGHTS'
 export const LOAD_FLIGHTS = 'LOAD_FLIGHTS'
+export const SET_LOADING = 'SET_LOADING'
+export const ADD_FLIGHTS = 'ADD_FLIGHTS'
 
 const initialState = {
   allFlights: [], //массив всех перелетов
@@ -27,7 +29,18 @@ const reducer = (state = initialState, action) => {
     case FETCH_FLIGHTS:
       return { ...state, allFlights: [...action.payload] }
     case LOAD_FLIGHTS:
-      return { ...state, currentFlights: [...action.payload] }
+      return {
+        ...state,
+        currentFlights: [...state.currentFlights, ...action.payload],
+      }
+    case SET_LOADING:
+      return { ...state, isLoading: action.payload }
+    case ADD_FLIGHTS:
+      return {
+        ...state,
+        startIndex: state.endIndex,
+        endIndex: state.endIndex + state.listLimit,
+      }
     default:
       return state
   }
@@ -38,7 +51,7 @@ export const getFlightList = (dispatch) => {
     .then((response) => response.json())
     .then((data) => data.result)
     .then((result) => {
-      dispatch(fetchFlights(result.flights))
+      dispatch(fetchFlightsAC(result.flights))
     })
     .then(() => {
       dispatch(loadFlights(store.getState()))
@@ -47,19 +60,27 @@ export const getFlightList = (dispatch) => {
 }
 
 export const loadFlights = (state) => {
-  let currentFlights = []
+  let flightsPortion = []
   return (dispatch) => {
+    dispatch(setLoadingAC(true))
     for (let i = state.startIndex; i < state.endIndex; i++) {
-      currentFlights.push(state.allFlights[i])
-      dispatch(loadFlightsAC(currentFlights))
+      flightsPortion.push(state.allFlights[i])
     }
+    dispatch(loadFlightsAC(flightsPortion))
+    dispatch(setLoadingAC(false))
+    console.log(state)
   }
+
   // this.setShowFiltred(false)
-  // this.setLoading(false)
+}
+export const addFlights = (dispatch) => {
+  dispatch(addFlightsAC())
+  const state = store.getState()
+  dispatch(loadFlights(state))
 }
 
 // action creators
-export const fetchFlights = (payload) => {
+export const fetchFlightsAC = (payload) => {
   return {
     type: FETCH_FLIGHTS,
     payload,
@@ -71,6 +92,16 @@ export const loadFlightsAC = (payload) => {
     payload,
   }
 }
+export const addFlightsAC = () => {
+  return {
+    type: ADD_FLIGHTS,
+  }
+}
+export const setLoadingAC = (payload) => {
+  return {
+    type: SET_LOADING,
+    payload,
+  }
+}
 
 export const store = createStore(reducer, applyMiddleware(thunk))
-// ,

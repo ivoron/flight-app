@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import FlightCard from './FlightCard'
 import Loader from './Loader'
 import NoResult from './NoResult'
-import { getFlightList } from '../Redux Store'
+import { addFlights, getFlightList } from '../Redux Store'
 
 const FlightList = ({ AppStore }) => {
+  const load = useSelector((state) => state.isLoading)
+  const array = useSelector((state) => state.currentFlights)
   const dispatch = useDispatch()
-  const state = useSelector((state) => state)
-  console.log(state)
   const { currentFlights } = AppStore
   useEffect(() => {
     dispatch(getFlightList)
@@ -24,7 +24,8 @@ const FlightList = ({ AppStore }) => {
   React.useEffect(() => {
     const callback = (entries, observer) => {
       if (entries[0].isIntersecting && !AppStore.isLoading) {
-        AppStore.addFlights()
+        dispatch(addFlights)
+        // AppStore.addFlights()
       }
     }
     const observer = new IntersectionObserver(callback, options)
@@ -38,7 +39,7 @@ const FlightList = ({ AppStore }) => {
             <FlightCard key={flight.flightToken} flightInfo={flight.flight} />
           ))
         ) : (
-          currentFlights.map((flight) => (
+          array.map((flight) => (
             <FlightCard key={flight.flightToken} flightInfo={flight.flight} />
           ))
         )
