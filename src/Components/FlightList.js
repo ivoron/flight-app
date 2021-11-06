@@ -4,22 +4,21 @@ import FlightCard from './FlightCard'
 import Loader from './Loader'
 import NoResult from './NoResult'
 
-const FlightList = observer(({ AppStore }) => {
+const FlightList = ({ AppStore }) => {
   const { currentFlights } = AppStore
   useEffect(() => {
     AppStore.getFlightList()
   }, [AppStore])
   const loadRef = React.useRef()
-  const options = {
-    rootMargin: '100px',
-    threshold: 1.0,
-  }
-
   React.useEffect(() => {
-    const callback = (entries, observer) => {
+    const callback = (entries) => {
       if (entries[0].isIntersecting && !AppStore.isLoading) {
         AppStore.addFlights()
       }
+    }
+    const options = {
+      rootMargin: '100px',
+      threshold: 1.0,
     }
     const observer = new IntersectionObserver(callback, options)
     observer.observe(loadRef.current)
@@ -46,5 +45,5 @@ const FlightList = observer(({ AppStore }) => {
       )}
     </div>
   )
-})
-export default FlightList
+}
+export default observer(FlightList)
