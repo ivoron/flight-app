@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import FlightCard from './FlightCard'
@@ -6,47 +5,47 @@ import Loader from './Loader'
 import NoResult from './NoResult'
 import { addFlights, getFlightList } from '../Redux Store'
 
-const FlightList = ({ AppStore }) => {
-  const load = useSelector((state) => state.isLoading)
-  const array = useSelector((state) => state.currentFlights)
+const FlightList = () => {
+  const { error, currentFlights, filtredFlights, isLoading, showFiltred } =
+    useSelector((state) => state)
   const dispatch = useDispatch()
-  const { currentFlights } = AppStore
+
   useEffect(() => {
     dispatch(getFlightList)
-    AppStore.getFlightList()
-  }, [AppStore])
+  }, [dispatch])
+
   const loadRef = React.useRef()
-  const options = {
-    rootMargin: '100px',
-    threshold: 1.0,
-  }
 
   React.useEffect(() => {
-    const callback = (entries, observer) => {
-      if (entries[0].isIntersecting && !AppStore.isLoading) {
+    const callback = (entries) => {
+      if (entries[0].isIntersecting && !isLoading) {
         dispatch(addFlights)
-        // AppStore.addFlights()
       }
+    }
+    const options = {
+      rootMargin: '100px',
+      threshold: 1.0,
     }
     const observer = new IntersectionObserver(callback, options)
     observer.observe(loadRef.current)
-  }, [AppStore])
+  }, [isLoading, dispatch])
   return (
     <div className="flight-list">
-      {!AppStore.isLoading ? (
-        AppStore.showFiltred ? (
-          AppStore.filtredFlights.map((flight) => (
+      {!isLoading ? (
+        showFiltred ? (
+          filtredFlights.map((flight) => (
             <FlightCard key={flight.flightToken} flightInfo={flight.flight} />
           ))
         ) : (
-          array.map((flight) => (
+          currentFlights.map((flight) => (
             <FlightCard key={flight.flightToken} flightInfo={flight.flight} />
           ))
         )
       ) : (
         <Loader />
       )}
-      {!AppStore.filtredFlights.length && AppStore.showFiltred ? (
+      {error && !isLoading && <h3>{error}</h3>}
+      {!filtredFlights.length && showFiltred ? (
         <NoResult />
       ) : (
         <div ref={loadRef}></div>
@@ -54,4 +53,4 @@ const FlightList = ({ AppStore }) => {
     </div>
   )
 }
-export default observer(FlightList)
+export default FlightList

@@ -3,6 +3,7 @@ import thunk from 'redux-thunk'
 
 // action types
 export const FETCH_FLIGHTS = 'FETCH_FLIGHTS'
+export const FETCH_ERROR = 'FETCH_ERROR'
 export const LOAD_FLIGHTS = 'LOAD_FLIGHTS'
 export const SET_LOADING = 'SET_LOADING'
 export const ADD_FLIGHTS = 'ADD_FLIGHTS'
@@ -19,6 +20,7 @@ const initialState = {
   carriers: [], // список доступных авиакомпаний
   filtredCarriers: [], // список выбранных авиакомпаний
   isLoading: true, //индикатор загрузки
+  error: null, //ошибка при запросе к API
   showFiltred: false, //индикатор отображения отфильтрованныъ перелетов
   startIndex: 0, //стартовый индекс добавления в текущий массив из общего
   listLimit: 10, // лимит на единоразовое добавление в текущий массив
@@ -35,6 +37,8 @@ const reducer = (state = initialState, action) => {
       }
     case SET_LOADING:
       return { ...state, isLoading: action.payload }
+    case FETCH_ERROR:
+      return { ...state, error: action.payload }
     case ADD_FLIGHTS:
       return {
         ...state,
@@ -56,19 +60,21 @@ export const getFlightList = (dispatch) => {
     .then(() => {
       dispatch(loadFlights(store.getState()))
     })
-    .catch((error) => console.error(error))
+    .catch((error) => {
+      dispatch(fetchErrorAC(`Can't load flights from server`))
+      console.error(error)
+      dispatch(setLoadingAC(false))
+    })
 }
 
 export const loadFlights = (state) => {
   let flightsPortion = []
   return (dispatch) => {
-    dispatch(setLoadingAC(true))
     for (let i = state.startIndex; i < state.endIndex; i++) {
       flightsPortion.push(state.allFlights[i])
     }
     dispatch(loadFlightsAC(flightsPortion))
     dispatch(setLoadingAC(false))
-    console.log(state)
   }
 
   // this.setShowFiltred(false)
@@ -89,6 +95,12 @@ export const fetchFlightsAC = (payload) => {
 export const loadFlightsAC = (payload) => {
   return {
     type: LOAD_FLIGHTS,
+    payload,
+  }
+}
+export const fetchErrorAC = (payload) => {
+  return {
+    type: FETCH_ERROR,
     payload,
   }
 }
