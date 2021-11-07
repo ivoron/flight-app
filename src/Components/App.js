@@ -10,7 +10,7 @@ const App = inject('store')(
       <div className="App">
         <Sidebar AppStore={store} />
         <div className="content">
-          <FlightList AppStore={store} />
+          <FlightList />
         </div>
       </div>
     )

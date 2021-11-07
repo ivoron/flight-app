@@ -1,8 +1,12 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
+import { sortingFlights } from '../../Redux Store'
 
-export default function SortingForm({ sortingFlights }) {
+export default function SortingForm() {
+  const dispatch = useDispatch()
+
   const sortFlights = (value) => {
-    sortingFlights(value)
+    dispatch(sortingFlights(value))
   }
   return (
     <div className="form-container">
@@ -31,7 +35,7 @@ export default function SortingForm({ sortingFlights }) {
             <input
               name="sorting-form"
               type="radio"
-              value="travel-time"
+              value="duration"
               onInput={(event) => sortFlights(event.target.value)}
             />{' '}
             - по времени в пути

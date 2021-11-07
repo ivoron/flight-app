@@ -9,7 +9,6 @@ const FlightList = () => {
   const { error, currentFlights, filtredFlights, isLoading, showFiltred } =
     useSelector((state) => state)
   const dispatch = useDispatch()
-
   useEffect(() => {
     dispatch(getFlightList)
   }, [dispatch])
@@ -18,7 +17,7 @@ const FlightList = () => {
 
   React.useEffect(() => {
     const callback = (entries) => {
-      if (entries[0].isIntersecting && !isLoading) {
+      if (entries[0].isIntersecting && !isLoading && !showFiltred) {
         dispatch(addFlights)
       }
     }
@@ -28,7 +27,7 @@ const FlightList = () => {
     }
     const observer = new IntersectionObserver(callback, options)
     observer.observe(loadRef.current)
-  }, [isLoading, dispatch])
+  }, [isLoading, dispatch, showFiltred])
   return (
     <div className="flight-list">
       {!isLoading ? (
@@ -48,7 +47,11 @@ const FlightList = () => {
       {!filtredFlights.length && showFiltred ? (
         <NoResult />
       ) : (
-        <div ref={loadRef}></div>
+        <div ref={loadRef}>
+          {!isLoading && showFiltred && (
+            <button onClick={() => dispatch(addFlights)}>Загрузить ещё</button>
+          )}
+        </div>
       )}
     </div>
   )

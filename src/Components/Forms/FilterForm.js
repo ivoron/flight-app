@@ -1,6 +1,12 @@
 import React from 'react'
+import { selectTransfers } from '../../Redux Store'
+import { useDispatch } from 'react-redux'
 
-export default function FilterForm({ selectTransfers }) {
+export default function FilterForm() {
+  const dispatch = useDispatch()
+  const toggleOptions = (event) => {
+    dispatch(selectTransfers(event.target.value, event.target.checked))
+  }
   return (
     <div className="form-container">
       <label>
@@ -11,9 +17,7 @@ export default function FilterForm({ selectTransfers }) {
               name="filter-form"
               type="checkbox"
               value="no-transfer"
-              onChange={(event) =>
-                selectTransfers(event.target.value, event.target.checked)
-              }
+              onChange={(event) => toggleOptions(event)}
             />{' '}
             - без пересадок
           </label>
@@ -22,9 +26,7 @@ export default function FilterForm({ selectTransfers }) {
               name="filter-form"
               type="checkbox"
               value="one-transfer"
-              onChange={(event) =>
-                selectTransfers(event.target.value, event.target.checked)
-              }
+              onChange={(event) => toggleOptions(event)}
             />{' '}
             - одна пересадка
           </label>

@@ -1,16 +1,18 @@
 import { observer } from 'mobx-react'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import AviaFilterForm from './Forms/AviaFilterForm'
 import FilterForm from './Forms/FilterForm'
 import PriceForm from './Forms/PriceForm'
 import SortingForm from './Forms/SortingForm'
 
 const Sidebar = observer(({ AppStore }) => {
+  const { showFiltred, filtredFlights } = useSelector((state) => state)
   return (
     <div className="sidebar-container">
       <div className="sidebar">
-        <SortingForm sortingFlights={AppStore.sortingFlights} />
-        <FilterForm selectTransfers={AppStore.selectTransfers} />
+        <SortingForm />
+        <FilterForm />
         <PriceForm
           showPriceRange={AppStore.showPriceRange}
           setPriceRange={AppStore.setPriceRange}
@@ -20,10 +22,10 @@ const Sidebar = observer(({ AppStore }) => {
           selectCompanies={AppStore.selectCompanies}
         />
       </div>
-      {AppStore.showFiltred &&
-        (AppStore.filtredFlights.length ? (
+      {showFiltred &&
+        (filtredFlights.length ? (
           <p className="filter-message">
-            Найдено: {AppStore.filtredFlights.length} рейсов
+            Найдено: {filtredFlights.length} рейсов
           </p>
         ) : (
           <p className="filter-message">
